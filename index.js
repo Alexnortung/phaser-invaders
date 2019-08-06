@@ -36,7 +36,9 @@ function create() {
 }
 
 function killEnemy(projectile, enemy) {
-    console.log('kill enemy', projectile, enemy);
+    // console.log('kill enemy', projectile, enemy);
+
+    enemyController.removeEnemy(enemy);
     
     projectiles.remove(projectile, true, true);
     enemyController.enemyGroup.remove(enemy, true, true);
