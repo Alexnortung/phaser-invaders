@@ -8,6 +8,7 @@ class EnemyController {
         this.enemyDistance = 50;
         this.xSpaces = (this.game.physics.world.bounds.width / this.enemyDistance) - 2;
         this.currentXSpace = 0;
+        this.totalEnemies = 0;
 
         this.movingDirection = 'right';
 
@@ -36,6 +37,7 @@ class EnemyController {
             //console.log(enemy)
             col++;
             col = col % this.columns.length;
+            this.totalEnemies++;
         }
     }
 
@@ -95,7 +97,29 @@ class EnemyController {
             }
         }
         this.checkColumns();
-        console.log(this.enemies, this.columns);
+        this.setMoveLevel();
+    }
+
+    setMoveLevel() {
+        const l = this.enemies.length;
+        const t = this.totalEnemies;
+        const mt = this.moveTimer;
+        if (l >= t * 3 / 4) {
+            // level 1
+            mt.timeScale = 1;
+        } else if (l >= t / 2) {
+            // level 2
+            mt.timeScale = 1.75;
+        } else if (l >= t / 4) {
+            // level 3
+            mt.timeScale = 2.5;
+        } else if (l > 1) {
+            // level 4
+            mt.timeScale = 3.25;
+        } else if (l === 1) {
+            // level 5
+            mt.timeScale = 5;
+        }
     }
 
     checkColumns() {
@@ -122,5 +146,11 @@ class EnemyController {
         if (removed) {
             this.checkColumns();
         }
+    }
+
+    shootFromRandom() {
+        const index = Math.floor(Math.random() * this.enemies.length);
+        const enemy = this.enemies[index];
+        
     }
 }
