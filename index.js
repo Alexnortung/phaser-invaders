@@ -3,6 +3,8 @@ let projectiles;
 let player;
 let cursors;
 let enemyController;
+let checkOutOfBounds;
+let bg;
 
 function preload() {
     this.load.image('rocket', 'img/rocket.png');
@@ -18,7 +20,7 @@ function create() {
         y: 550,
     }
     projectiles = this.add.group();
-    
+
     player = this.physics.add.image(playerPos.x, playerPos.y, 'rocket');
     player.setCollideWorldBounds(true);
     const spaceKey = this.input.keyboard.addKey('space');
@@ -33,6 +35,39 @@ function create() {
     this.physics.add.collider(projectiles, enemyController.enemyGroup, killEnemy, null, this);
 
     //this.cameras.main.setBackgroundColor('#ff00ff');
+    bg = new Background(this);
+
+    checkOutOfBounds = (body, directions = ['top', 'right', 'bottom', 'left']) => {
+        if (!body) {
+            return true;
+        }
+
+        if (directions.includes('left')) {
+            if (body.right < 0) {
+                return true;
+            }
+        }
+    
+        if (directions.includes('top')) {
+            if (body.bottom < 0) {
+                return true;
+            }
+        }
+        
+        if (directions.includes('bottom')) {
+            if (body.top > this.physics.world.bounds.height) {
+                return true;
+            }
+        }
+    
+        if (directions.includes('right')) {
+            if (body.left > this.physics.world.bounds.width) {
+                return true;
+            }
+        }
+    
+        return false;
+    }
 }
 
 function killEnemy(projectile, enemy) {
@@ -62,8 +97,7 @@ function update() {
             return;
         }
         
-        if (projectile.body.bottom < 0 || projectile.body.right < 0||
-            projectile.body.left > this.physics.world.bounds.width || projectile.body.top > this.physics.world.bounds.height) {
+        if (checkOutOfBounds(projectile.body)) {
             // console.log('destroying projectile');
             // projectile.destroy();
             projectiles.remove(projectile, true, true);
