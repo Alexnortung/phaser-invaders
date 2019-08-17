@@ -4,10 +4,15 @@ class EnemyController {
         this.enemies = [];
         this.columns = [...Array(columns)].map(u => ([]));
         this.enemyGroup = this.game.physics.add.group();
+        this.enemyProjectiles = this.game.physics.add.group();
+        // this.xSpaces = (this.game.physics.world.bounds.width / this.enemyDistance) - 2;
+        this.padding = 50;
+        this.xSpaces = 15;
+        this.enemyRadius = 16;
         // distance between enemies
-        this.enemyDistance = 50;
-        this.xSpaces = (this.game.physics.world.bounds.width / this.enemyDistance) - 2;
-        this.currentXSpace = 0;
+        this.enemyDistance = (this.game.physics.world.bounds.width - (2 * this.padding)) / this.xSpaces;
+        
+        this.currentXSpace = (this.xSpaces - this.columns.length) / 2;
         this.totalEnemies = 0;
 
         this.movingDirection = 'right';
@@ -19,6 +24,25 @@ class EnemyController {
             loop: true,
         });
 
+        this.shootTimer = this.game.scene.scene.time.addEvent({
+            delay: 1250,
+            callback: this.shootFromRandom,
+            callbackScope: this,
+            loop: true,
+        });
+
+    }
+
+    update() {
+        this.enemyProjectiles.children.iterate(projectile => {
+            if (!projectile) {
+                return;
+            }
+            
+            if (checkOutOfBounds(projectile.body, ['bottom'])) {
+                this.enemyProjectiles.remove(projectile, true, true);
+            }
+        })
     }
 
     addEnemies(amount = 1) {
@@ -26,8 +50,8 @@ class EnemyController {
         for (let i = 0; i < amount; i++) {
             let colObj = this.columns[col];
             let row = colObj.length;
-            let x = this.enemyDistance + col * this.enemyDistance;
-            let y = this.enemyDistance + row * this.enemyDistance;
+            let x = this.padding + this.enemyRadius + col * this.enemyDistance + this.currentXSpace * this.enemyDistance;
+            let y = this.padding + row * this.enemyDistance;
 
             //const enemy = new Enemy(this.scene.scene, x, y, 'enemy');
             const enemy = this.enemyGroup.create(x, y, 'enemy');
@@ -149,8 +173,17 @@ class EnemyController {
     }
 
     shootFromRandom() {
+        if (this.enemies.length <= 0) {
+            return;
+        }
         const index = Math.floor(Math.random() * this.enemies.length);
         const enemy = this.enemies[index];
+
+        const circle = this.game.add.circle(enemy.x, enemy.y, 2, 0xff0000);
+        this.game.physics.add.existing(circle);
+        this.enemyProjectiles.add(circle);
+        circle.body.velocity.y = 150;
+        // console.log('shooting');
         
     }
 }

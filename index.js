@@ -33,6 +33,7 @@ function create() {
     enemyController.addEnemiesRow(4);
 
     this.physics.add.collider(projectiles, enemyController.enemyGroup, killEnemy, null, this);
+    this.physics.add.collider(enemyController.enemyProjectiles, player, killPLayer, null, this);
 
     //this.cameras.main.setBackgroundColor('#ff00ff');
     bg = new Background(this);
@@ -70,6 +71,11 @@ function create() {
     }
 }
 
+function killPLayer() {
+    console.log('You died');
+    
+}
+
 function killEnemy(projectile, enemy) {
     // console.log('kill enemy', projectile, enemy);
 
@@ -103,6 +109,8 @@ function update() {
             projectiles.remove(projectile, true, true);
         }
     });
+
+    enemyController.update();
 
     playerPos.x = player.x;
     playerPos.y = player.y;
