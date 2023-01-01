@@ -9,6 +9,6 @@
   "author": "Alexander Nortung",
   "license": "ISC",
   "dependencies": {
-    "phaser": "^3.18.1"
+    "phaser": "^3.55.2"
   }
 }
